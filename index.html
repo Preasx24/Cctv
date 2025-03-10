@@ -3,141 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D-TECH Account Extractor</title>
-
+    <title>D-TECH CCTV IP Viewer</title>
+<script type='text/javascript' src='//pl25454862.profitablecpmrate.com/06/70/0a/06700ae74ed6d9035f7f071031360cf5.js'></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #00ff00;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 0;
             text-align: center;
-            padding: 20px;
         }
         h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            color: #58a6ff;
+            margin-top: 20px;
         }
-        input[type="file"], input[type="text"] {
-            margin: 20px 0;
-            padding: 10px;
-            width: 80%;
+        .container {
+            margin: 20px auto;
+            max-width: 700px;
+            padding: 20px;
+            background: #161b22;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        button {
-            background-color: #00ff00;
-            color: #121212;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
+        select, button {
             margin: 10px;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #21262d;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #c9d1d9;
+            transition: background-color 0.3s ease-in-out;
         }
-        button:hover {
-            background-color: #00cc00;
+        select:hover, button:hover {
+            background-color: #58a6ff;
+            cursor: pointer;
         }
-        pre {
-            text-align: left;
-            background-color: #1e1e1e;
+        #output {
+            margin-top: 20px;
             padding: 10px;
+            background: #161b22;
+            border-radius: 8px;
+            text-align: left;
+            white-space: pre-wrap;
+            overflow: auto;
+            max-height: 500px;
+        }
+        .ip-button {
+            display: inline-block;
+            background: #58a6ff;
+            color: white;
+            padding: 12px;
+            margin: 8px;
             border-radius: 5px;
-            overflow-x: auto;
+            cursor: pointer;
+            font-size: 16px;
+            width: calc(100% - 40px);
+            text-align: center;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .ip-button:hover {
+            background: #1f76e2;
+            transform: scale(1.05);
+        }
+        .country-city {
+            font-size: 18px;
+            font-weight: bold;
+            color: #58a6ff;
+            margin-top: 10px;
+        }
+        .ip-container {
+            margin-bottom: 15px;
+        }
+        .loading {
+            color: #58a6ff;
+            font-size: 18px;
+            margin-top: 20px;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <h1>D-TECH Account Extractor</h1>
-    <p>Select a file to extract <strong>email:password</strong> pairs.</p>
-    <input type="file" id="fileInput" accept=".txt">
-    <br>
-    <button onclick="processFile()">Extract Accounts</button>
-    <br><br>
-    <h3>Extracted Accounts:</h3>
-    <pre id="output"></pre>
-    <p id="accountCount" style="font-weight: bold;"></p>
-    <br>
-    <button id="copyBtn" style="display:none;" onclick="copyToClipboard()">Copy to Clipboard</button>
-    <br><br>
-    <input type="text" id="fileName" placeholder="Enter file name (e.g., accounts.txt)" style="display:none;">
-    <br>
-    <button id="downloadBtn" style="display:none;" onclick="downloadFile()">Download Extracted File</button>
+    <h1>D-TECH CCTV IP Viewer</h1>
+    <div class="container">
+        <p>Select a country to view the CCTV IPs:</p>
+        <select id="country">
+            <option value="" disabled selected>Select Country</option>
+            <option value="IN">India (IN)</option>
+            <option value="FR">France (FR)</option>
+            <option value="DE">Germany (DE)</option>
+            <option value="CN">China (CN)</option>
+            <option value="BR">Brazil (BR)</option>
+            <option value="ZA">South Africa (ZA)</option>
+            <option value="US">United States (US)</option>
+            <option value="RU">Russia (RU)</option>
+            <option value="JP">Japan (JP)</option>
+        </select>
 
+        <br>
+        <button onclick="fetchIPs()">Fetch IPs</button>
+
+        <div class="loading" id="loadingMessage" style="display: none;">Loading...</div>
+        <div id="output"></div>
+    </div>
+    <script async="async" data-cfasync="false" src="//pl25452864.profitablecpmrate.com/17bdc3ff4d9e3bbe0f49799dd182c4c1/invoke.js"></script>
+    <div id="container-17bdc3ff4d9e3bbe0f49799dd182c4c1"></div>
     <script>
-        let extractedData = "";
+        const countryURLs = {
+            'IN': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/IN.txt',
+            'FR': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/FR.txt',
+            'DE': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/DE.txt',
+            'CN': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/CN.txt',
+            'BR': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/BR.txt',
+            'ZA': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/ZA.txt',
+            'US': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/US.txt',
+            'RU': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/RU.txt',
+            'JP': 'https://raw.githubusercontent.com/Preasx24/D-TECH_CHAT/refs/heads/main/JP.txt'
+        };
 
-        function processFile() {
-            const fileInput = document.getElementById('fileInput');
+        async function fetchIPs() {
+            const country = document.getElementById('country').value;
             const output = document.getElementById('output');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const copyBtn = document.getElementById('copyBtn');
-            const fileNameInput = document.getElementById('fileName');
-            const accountCount = document.getElementById('accountCount');
-            output.textContent = "";
-            accountCount.textContent = "";
+            const loadingMessage = document.getElementById('loadingMessage');
+            output.innerHTML = '';
+            loadingMessage.style.display = 'block';
 
-            if (!fileInput.files.length) {
-                alert("Please select a file first!");
+            if (!country) {
+                output.innerHTML = 'Please select a country!';
+                loadingMessage.style.display = 'none';
                 return;
             }
 
-            const file = fileInput.files[0];
-            const reader = new FileReader();
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(countryURLs[country]);
+                    const data = await response.text();
 
-            reader.onload = function(event) {
-                const content = event.target.result;
-                const pattern = /(\S+@\S+)\s*:\s*(\S+)/g;
-                let match;
-                extractedData = "";
-                let count = 0;
-
-                while ((match = pattern.exec(content)) !== null) {
-                    extractedData += `${match[1]}:${match[2]}\n`;
-                    count++;
+                    loadingMessage.style.display = 'none';
+                    displayIPData(country, data);
+                } catch (error) {
+                    output.innerHTML = `Failed to fetch IPs: ${error.message}`;
+                    loadingMessage.style.display = 'none';
                 }
-
-                if (extractedData) {
-                    output.textContent = extractedData;
-                    accountCount.textContent = `Total Accounts Extracted: ${count}`;
-                    downloadBtn.style.display = "inline-block";
-                    copyBtn.style.display = "inline-block";
-                    fileNameInput.style.display = "inline-block";
-                } else {
-                    output.textContent = "No valid email:password pairs found.";
-                    downloadBtn.style.display = "none";
-                    copyBtn.style.display = "none";
-                    fileNameInput.style.display = "none";
-                }
-            };
-
-            reader.onerror = function() {
-                alert("Error reading file!");
-            };
-
-            reader.readAsText(file);
+            }, 500); // Slight delay to simulate processing
         }
 
-        function copyToClipboard() {
-            navigator.clipboard.writeText(extractedData).then(() => {
-                alert("Copied to clipboard!");
-            }).catch(() => {
-                alert("Failed to copy!");
+        function displayIPData(country, data) {
+            const output = document.getElementById('output');
+            const lines = data.split('\n');
+            const countryName = country.toUpperCase();
+
+            lines.forEach((line, index) => {
+                const ipInfo = line.split(' - ');
+                if (ipInfo.length === 2) {
+                    const [ipPort, location] = ipInfo;
+                    const countryCityDiv = document.createElement('div');
+                    countryCityDiv.classList.add('ip-container');
+
+                    const countryCityHeader = document.createElement('div');
+                    countryCityHeader.classList.add('country-city');
+                    countryCityHeader.innerHTML = `${countryName} - ${location}`;
+
+                    const ipButton = document.createElement('button');
+                    ipButton.classList.add('ip-button');
+                    ipButton.textContent = 'View CCTV Footage';
+                    ipButton.onclick = () => window.open(ipPort, '_blank');
+
+                    countryCityDiv.appendChild(countryCityHeader);
+                    countryCityDiv.appendChild(ipButton);
+                    output.appendChild(countryCityDiv);
+
+                    // Add delay between IP button displays for smoothness
+                    setTimeout(() => {
+                        ipButton.style.display = 'inline-block';
+                    }, index * 300); // Slight delay between IP buttons
+                }
             });
         }
-
-        function downloadFile() {
-            // Redirect to the URL first
-            window.location.href = "https://conductorhimselfwhipped.com/spymr251ew?key=ce76edf7e5c6e4907177e712dc143365";
-            
-            // Then, trigger the download after a slight delay to ensure the redirect is registered
-            setTimeout(function() {
-                const fileNameInput = document.getElementById('fileName');
-                const fileName = fileNameInput.value || "extracted_accounts.txt";
-                const blob = new Blob([extractedData], { type: "text/plain" });
-                const link = document.createElement("a");
-                link.href = URL.createObjectURL(blob);
-                link.download = fileName;
-                link.click();
-            }, 500); // Delay of 500ms to ensure redirect happens before download
-        }
     </script>
+<!-- New Script Added Here -->
+    <script type='text/javascript' src='//pl25455369.profitablecpmrate.com/61/51/71/61517150132ff41edb773555ec988118.js'></script>
 </body>
 </html>
